@@ -1,0 +1,9 @@
+{% extends "main.html" %}
+
+{% block title %}Ваша почта{% endblock %}
+
+{% block content %}
+    <a href="{% url "send_email_page" %}"><div class="menu-item">Написать письмо</div></a>
+    <a href="{% url "inbox_page" %}"><div class="menu-item">Входящие {% if total_new_letters %}({{ total_new_letters }}){% endif %}</div></a>
+    <a href="{% url "sent_page" %}"><div class="menu-item">Исходящие</div></a>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static "main.css" %}">
+    <title>{% block title %}Ваша почта{% endblock %}</title>
+</head>
+<body>
+    <div id="page">
+        <div>Здравствуйте <span style="font-weight: bold">{{ user.first_name }} {{ user.last_name }}</span></div>
+        <div>Ваша почта: <span style="font-weight: bold">{{ user.email }}</span></div>
+        <br>
+        {% block content %} {% endblock %}
+    </div>
+</body>
+</html>

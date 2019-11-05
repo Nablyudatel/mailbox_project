@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+
+{% block title %}Письмо{% endblock %}
+
+{% block content %}
+    {% if letters %}
+        {% for letter in letters %}
+            <div class="letter">
+                <a href="{% url "letter_page" letter.id%}"><div>{{ letter.message.header }}</div></a>
+                    <div>Получатели: [
+                        {% for addressee in letter.message.addressees_set.all %}
+                            {% if forloop.last %}
+                                <span>{{ addressee }}</span>
+                            {% else %}
+                                <span>{{ addressee }} | </span>
+                            {% endif %}
+                        {% endfor %}
+                    ]</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+<a href="{% url "main_page" %}"><div class="menu-item">На главную.</div></a>
+{% endblock %}
