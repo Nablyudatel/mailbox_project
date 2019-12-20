@@ -47,7 +47,7 @@ def send_email_page(request, email_form=None):
     Страница с формой отправки письма.
     Отображается при гет-запросе.
     """
-    email_form = email_form if not email_form else EmailForm()
+    email_form = email_form if email_form else EmailForm()
     return render(request, "mail_box/send_email_page.html", {"email_form": email_form})
 
 
