@@ -11,11 +11,13 @@ from accounts.models import MailboxUser
 
 
 @require_GET
-@login_required
 def main_page(request):
     """Главная страница"""
     user = request.user
-    total_new_letters = Letter.objects.filter(user=user, type=EmailTypes.INBOX.value, is_read=False).count()
+    if user.is_authenticated:
+        total_new_letters = Letter.objects.filter(user=user, type=EmailTypes.INBOX.value, is_read=False).count()
+    else:
+        total_new_letters = []
     return render(request, "main_page.html", {"total_new_letters": total_new_letters})
 
 

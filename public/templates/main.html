@@ -8,10 +8,17 @@
     <title>{% block title %}Ваша почта{% endblock %}</title>
 </head>
 <body>
+    {% if user.is_authenticated %}
     <div id="page">
         <div>Здравствуйте <span style="font-weight: bold">{{ user.first_name }} {{ user.last_name }}</span></div>
         <div>Ваша почта: <span style="font-weight: bold">{{ user.email }}</span></div>
         <br>
+    </div>
+    {% else %}
+        <div id="page">
+        <div>Здравствуйте <span style="font-weight: bold">Гость</span></div>
+        <br>
+    {% endif %}
         {% block content %} {% endblock %}
     </div>
 </body>
