@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # --------------------------------------
     'mail_box.apps.MailBoxConfig',
-    'users.apps.UsersConfig',
+    'accounts.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -126,4 +126,4 @@ STATIC_URL = '/static/'
 
 # Настройка пользователя
 
-AUTH_USER_MODEL = "users.MailboxUser"
+AUTH_USER_MODEL = "accounts.MailboxUser"

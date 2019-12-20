@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST, require_GET
 
 from mail_box.forms import EmailForm
 from .models import Letter, EmailTypes
-from users.models import MailboxUser
+from accounts.models import MailboxUser
 
 
 @require_GET
@@ -25,7 +25,7 @@ def inbox(request):
     """Ящик входящей почты"""
     user = request.user
     letters = Letter.objects.filter(user=user, type=EmailTypes.INBOX.value)
-    return render(request, "inbox.html", {"letters": letters})
+    return render(request, "mail_box/inbox.html", {"letters": letters})
 
 
 @require_GET
@@ -34,7 +34,7 @@ def sent_box(request):
     """Ящик исходящей почты"""
     user = request.user
     letters = Letter.objects.filter(user=user, type=EmailTypes.SENT.value)
-    return render(request, "sent.html", {"letters": letters})
+    return render(request, "mail_box/sent.html", {"letters": letters})
 
 
 @require_GET
@@ -46,7 +46,7 @@ def send_email_page(request, email_form=None):
     Отображается при гет-запросе.
     """
     email_form = email_form if not email_form else EmailForm()
-    return render(request, "send_email_page.html", {"email_form": email_form})
+    return render(request, "mail_box/send_email_page.html", {"email_form": email_form})
 
 
 @require_POST
@@ -58,6 +58,8 @@ def send_email(request):
     При неверных данных возвращает на страницу отправки письма,
     сохраняя введённые данные.
     """
+
+    # noinspection PyTypeChecker
     user: "MailboxUser" = request.user
     email_form = EmailForm(request.POST)
     if email_form.is_valid():
@@ -68,7 +70,7 @@ def send_email(request):
         response = redirect("main_page")
         messages.success(request, "Письмо успешно отправлено.")
     else:
-        response = render(request, "send_email_page.html", {"email_form": email_form})
+        response = render(request, "mail_box/send_email_page.html", {"email_form": email_form})
     return response
 
 
@@ -76,6 +78,8 @@ def send_email(request):
 @login_required
 def letter_page(request, letter_id):
     """Страница для просмотра содержимого письма."""
+
+    # noinspection PyTypeChecker
     user: "MailboxUser" = request.user
     letter = get_object_or_404(Letter, id=letter_id)
 
@@ -85,4 +89,4 @@ def letter_page(request, letter_id):
     letter.is_read = True
     letter.save()
 
-    return render(request, "letter_page.html", {"letter": letter})
+    return render(request, "mail_box/letter_page.html", {"letter": letter})

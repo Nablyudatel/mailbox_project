@@ -1,6 +1,6 @@
 from django import forms
 
-from users.models import MailboxUser
+from accounts.models import MailboxUser
 
 
 class EmailForm(forms.Form):
