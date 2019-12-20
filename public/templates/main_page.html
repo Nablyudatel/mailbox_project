@@ -11,6 +11,7 @@
         <a href="{% url "sent_page" %}"><div class="menu-item">Исходящие</div></a>
     {% else %}
         <a href="{% url "login" %}"><div class="menu-item">Войти в почтовый ящик</div></a>
-        <a href="/"><div class="menu-item">Получить почтовый ящик</div></a>
+        <a href="{% url "sign_up_page" %}"><div class="menu-item">Получить почтовый ящик</div></a>
     {% endif %}
+
 {% endblock %}

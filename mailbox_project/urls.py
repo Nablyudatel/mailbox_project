@@ -20,7 +20,7 @@ from mail_box.views import main_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
     path('', main_page, name="main_page"),
+    path('accounts/', include("accounts.urls")),
     path("mailbox/", include("mail_box.urls"))
 ]
