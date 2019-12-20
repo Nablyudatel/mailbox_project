@@ -121,3 +121,8 @@ USE_TZ = True
 
 STATICFILES_DIRS = ["public/static/", ]
 STATIC_URL = '/static/'
+
+
+# Настройка пользователя
+
+AUTH_USER_MODEL = "mail_box.MailboxUser"

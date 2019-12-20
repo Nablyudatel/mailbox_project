@@ -44,7 +44,7 @@ def send_email_page(request):
 @login_required
 @csrf_protect
 def send_email(request):
-    user: "MailboxUser" = request.user.mailboxuser
+    user: "MailboxUser" = request.user
     email_form = EmailForm(request.POST)
     if email_form.is_valid():
         header = email_form.cleaned_data["header"]
@@ -60,7 +60,7 @@ def send_email(request):
 @require_GET
 @login_required
 def letter_page(request, letter_id):
-    user: "MailboxUser" = request.user.mailboxuser
+    user: "MailboxUser" = request.user
     letter = get_object_or_404(Letter, id=letter_id)
 
     if not user.is_ownership_letter(letter):
