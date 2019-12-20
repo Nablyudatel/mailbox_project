@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from mail_box.models import MailboxUser
+from users.models import MailboxUser
 
 
 @admin.register(MailboxUser)

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
@@ -5,12 +6,14 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST, require_GET
 
 from mail_box.forms import EmailForm
-from .models import Letter, EmailTypes, MailboxUser
+from .models import Letter, EmailTypes
+from users.models import MailboxUser
 
 
 @require_GET
 @login_required
 def main_page(request):
+    """Главная страница"""
     user = request.user
     total_new_letters = Letter.objects.filter(user=user, type=EmailTypes.INBOX.value, is_read=False).count()
     return render(request, "main_page.html", {"total_new_letters": total_new_letters})
@@ -19,6 +22,7 @@ def main_page(request):
 @require_GET
 @login_required
 def inbox(request):
+    """Ящик входящей почты"""
     user = request.user
     letters = Letter.objects.filter(user=user, type=EmailTypes.INBOX.value)
     return render(request, "inbox.html", {"letters": letters})
@@ -27,6 +31,7 @@ def inbox(request):
 @require_GET
 @login_required
 def sent_box(request):
+    """Ящик исходящей почты"""
     user = request.user
     letters = Letter.objects.filter(user=user, type=EmailTypes.SENT.value)
     return render(request, "sent.html", {"letters": letters})
@@ -35,8 +40,12 @@ def sent_box(request):
 @require_GET
 @login_required
 @csrf_protect
-def send_email_page(request):
-    email_form = EmailForm()
+def send_email_page(request, email_form=None):
+    """
+    Страница с формой отправки письма.
+    Отображается при гет-запросе.
+    """
+    email_form = email_form if not email_form else EmailForm()
     return render(request, "send_email_page.html", {"email_form": email_form})
 
 
@@ -44,6 +53,11 @@ def send_email_page(request):
 @login_required
 @csrf_protect
 def send_email(request):
+    """
+    Представление для отправки письма.
+    При неверных данных возвращает на страницу отправки письма,
+    сохраняя введённые данные.
+    """
     user: "MailboxUser" = request.user
     email_form = EmailForm(request.POST)
     if email_form.is_valid():
@@ -52,6 +66,7 @@ def send_email(request):
         users = email_form.cleaned_data["addressee"]
         user.send_mail(header, text, users)
         response = redirect("main_page")
+        messages.success(request, "Письмо успешно отправлено.")
     else:
         response = render(request, "send_email_page.html", {"email_form": email_form})
     return response
@@ -60,6 +75,7 @@ def send_email(request):
 @require_GET
 @login_required
 def letter_page(request, letter_id):
+    """Страница для просмотра содержимого письма."""
     user: "MailboxUser" = request.user
     letter = get_object_or_404(Letter, id=letter_id)
 

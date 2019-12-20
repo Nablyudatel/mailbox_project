@@ -2,6 +2,7 @@
 
 from django.db import migrations
 import mail_box.models
+import users.models
 
 
 class Migration(migrations.Migration):
@@ -14,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='mailboxuser',
             managers=[
-                ('objects', mail_box.models.MailboxUserManager()),
+                ('objects', users.models.MailboxUserManager()),
             ],
         ),
     ]
