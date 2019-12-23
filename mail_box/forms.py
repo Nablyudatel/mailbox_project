@@ -13,4 +13,4 @@ class EmailForm(forms.Form):
 
     addressee = forms.ModelMultipleChoiceField(queryset=MailboxUser.objects.all())
     header = forms.CharField(max_length=70)
-    text = forms.CharField(max_length=2000, widget=forms.Textarea)
+    text = forms.CharField(max_length=900, widget=forms.Textarea)

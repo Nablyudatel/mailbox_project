@@ -16,8 +16,8 @@ class Message(models.Model):
 
     addressees_set = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="incoming_messages_set")
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="sent_messages_set")
-    header = models.CharField(max_length=300)
-    text = models.TextField(max_length=2000)
+    header = models.CharField(max_length=70)
+    text = models.TextField(max_length=900)
 
 
 class Letter(models.Model):
@@ -32,5 +32,5 @@ class Letter(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="letters_set")
     message = models.ForeignKey("Message", on_delete=models.PROTECT, related_name="+")
-    type = models.CharField(max_length=4, choices=[(code.name, code.value) for code in EmailTypes])
+    type = models.CharField(max_length=5, choices=[(code.name, code.value) for code in EmailTypes])
     is_read = models.BooleanField(default=True)
