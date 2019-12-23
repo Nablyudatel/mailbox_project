@@ -69,7 +69,9 @@ class MailboxUser(AbstractUser):
         Дело в том, что письмо по-сути отправляется путём его создания.
         """
 
-        message = Message.objects.create(sender=self, header=header, text=text)
+        message = Message(sender=self, header=header, text=text)
+        message.clean_fields()  # sqlite3 не проверяет длину текста, поэтому нужно самому
+        message.save()
         message.addressees_set.add(*users)
         sent_email = Letter(user=self, message=message, type=EmailTypes.SENT.value)
 

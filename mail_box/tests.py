@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -114,6 +115,61 @@ class TestOfPages(BaseTest):
         response = self.client.post(reverse("send_email"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "mail_box/send_email_page.html")
+
+
+class TestSendEmails(TestCase):
+    fixtures = ["initial_data.json", ]
+
+    def setUp(self) -> None:
+        self.target_users = list(MailboxUser.objects.all()[1:3])
+        self.sender = MailboxUser.objects.all()[0]
+
+    def _checked_created_emails(self, sender, target_users, letters):
+        self.assertEqual(len(letters), 3)
+        for letter in letters:
+            if letter.get_type() is EmailTypes.INBOX:
+                self.assertIn(letter.user, target_users)
+            elif letter.get_type() is EmailTypes.SENT:
+                self.assertEqual(letter.user, sender)
+            else:
+                self.fail()
+
+    def test_send_valid_data(self):
+        """Отправка письма с валидными данными"""
+
+        header = "Тестовое письмо номер один",
+        text = "Какой-то дурацкий текст."
+
+        letters = self.sender.send_mail(header, text, self.target_users)
+        self._checked_created_emails(self.sender, self.target_users, letters)
+
+    def test_send_invalid_header(self):
+
+        # слишком длинный заголовок
+        header = "".join("s" for _ in range(75))
+        text = "Какой-то дурацкий текст."
+        with self.assertRaises(ValidationError):
+            self.sender.send_mail(header, text, self.target_users)
+
+        # осутствие заголовка
+        header = ""
+        text = "Какой-то дурацкий текст."
+        with self.assertRaises(ValidationError):
+            self.sender.send_mail(header, text, self.target_users)
+
+    def test_send_invalid_text(self):
+
+        # слишком длинный текст
+        header = "Заголовок"
+        text = "".join("s" for _ in range(901))
+        with self.assertRaises(ValidationError):
+            self.sender.send_mail(header, text, self.target_users)
+
+        # осутствие текста
+        header = "Заголовок"
+        text = ""
+        with self.assertRaises(ValidationError):
+            self.sender.send_mail(header, text, self.target_users)
 
 
 class TestSendEmailsFromViews(BaseTest):
