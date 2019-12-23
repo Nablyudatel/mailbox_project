@@ -2,12 +2,28 @@ body {
     background-color: floralwhite;
 }
 
-.menu-item:hover {
-    text-decoration: underline;
-
+a {
+    text-decoration: none;
 }
+a:visited {
+    color: darkblue;
+}
+a:active {
+    color: darkblue;
+    text-decoration: underline;
+}
+.field-name {
+    font-weight: bold;
+}
+
 .menu-item {
-     font-size: 1.3em;
+    font-size: 1.3em;
+    padding-left: 8px;
+    border-bottom: cornflowerblue groove thin;
+}
+.menu-item:hover {
+    background-color: antiquewhite;
+    text-decoration: none;
 }
 
 #page {
@@ -23,15 +39,21 @@ body {
     padding: 3px;
     margin-bottom: 10px;
     border-bottom: black groove thin;
+    font-size: inherit;
 }
 
-a {
-    text-decoration: none;
+.letter.menu-item {
+    padding-left: 7px;
 }
-a:visited {
-    color: darkblue;
+
+#letter-view .letter-text {
+    background-color: white;
+    padding: 10px;
+    border: bisque groove 2px;
+    border-radius: 8px;
 }
-a:active {
-    color: darkblue;
-    text-decoration: underline;
+
+#letter-view .letter-header, #letter-view .letter-sender {
+    border-bottom: gray groove 1px;
 }
+

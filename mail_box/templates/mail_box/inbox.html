@@ -1,22 +1,8 @@
 {% extends "main.html" %}
 
-{% block title %}Письмо{% endblock %}
+{% block title %}Входящие письма{% endblock %}
 
 {% block content %}
-    {% if letters %}
-        {% for letter in letters %}
-            <a href="{% url "letter_page" letter.id%}">
-                <div class="letter">
-                    {% if not letter.is_read %}
-                        <div style="font-weight: bolder">{{ letter.message.header }} (Новое)</div>
-                    {% else %}
-                        <div>{{ letter.message.header }}</div>
-                    {% endif %}
-                    <div>{{ letter.message.sender }}</div>
-                </div>
-            </a>
-        {% endfor %}
-    {% endif %}
-
+    {% include "mail_box/letter_list.html" %}
 <a href="{% url "main_page" %}"><div class="menu-item">На главную.</div></a>
 {% endblock %}

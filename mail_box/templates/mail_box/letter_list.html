@@ -1,0 +1,20 @@
+{% if not letters %}
+    <div>Этот ящик пуст</div>
+{% else %}
+    {% for letter in letters %}
+        <a href="{% url "letter_page" letter.id%}">
+            <div class="letter menu-item">
+                <div class="letter-header">{{ letter.message.header }}</div>
+                <div><span class="letter-header">Получатели:</span> [
+                    {% for addressee in letter.message.addressees_set.all %}
+                        {% if forloop.last %}
+                            <span>{{ addressee }}</span>
+                        {% else %}
+                            <span>{{ addressee }} | </span>
+                        {% endif %}
+                    {% endfor %}
+                ]</div>
+            </div>
+        </a>
+    {% endfor %}
+{% endif %}

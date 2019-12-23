@@ -3,9 +3,13 @@
 {% block title %}Письмо{% endblock %}
 
 {% block content %}
-    <div>Отправитель: {{ letter.message.sender }}</div>
-    <div>Тема: {{ letter.message.header }}</div>
-    <div>Сообщение: <div>{{ letter.message.text }}</div></div>
-
+    <div id="letter-view">
+        <div class="field-name">Отправитель</div>
+        <div class="letter-sender">{{ letter.message.sender }}</div>
+        <div class="field-name">Тема</div>
+        <div class="letter-header">{{ letter.message.header }}</div>
+        <div class="field-name">Содержимое</div>
+        <div class="letter-text"><div>{{ letter.message.text }}</div></div>
+    </div>
 <a href="{% url "main_page" %}"><div class="menu-item">На главную.</div></a>
 {% endblock %}

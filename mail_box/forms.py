@@ -11,6 +11,6 @@ class EmailForm(forms.Form):
     как будто они у него находятся в контактах.
     """
 
-    addressee = forms.ModelMultipleChoiceField(queryset=MailboxUser.objects.all())
-    header = forms.CharField(max_length=70)
-    text = forms.CharField(max_length=900, widget=forms.Textarea)
+    addressee = forms.ModelMultipleChoiceField(queryset=MailboxUser.objects.all(), label="Адресаты")
+    header = forms.CharField(max_length=70, label="Заголовок")
+    text = forms.CharField(max_length=900, widget=forms.Textarea, label="Текст")
