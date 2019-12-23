@@ -1,7 +1,6 @@
 from enum import Enum
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxLengthValidator
 from django.db import models
 
 from mailbox_project import settings
@@ -23,6 +22,8 @@ class EmailTypes(Enum):
 class Message(models.Model):
     """Содержимое письма"""
 
+    # Адресатов можно находить динамически, по письмам привязанным к сообщению
+    # но это сложные запросы, поэтому решил, что лучше хранить в поле сообщения addressees_set.
     addressees_set = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="incoming_messages_set")
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="sent_messages_set")
     header = models.CharField(max_length=70)
