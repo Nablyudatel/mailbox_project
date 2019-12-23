@@ -22,7 +22,6 @@ class BaseTest(TestCase):
         """
         Нужна для проверки представлений для которых требуется авторизация
         """
-        authorize_required: bool = True  # предполагается проверять
 
         self.client.logout()
         response = self.client.get(url)
@@ -48,12 +47,18 @@ class TestOfPages(BaseTest):
         """Страница с отображением письма"""
 
         # попытка прочитать своё письмо
+        # этот запрос чтобы обязательно были непрочитанные письма у пользователя
+        Letter.objects.filter(user=self.authorized_user, is_read=True).update(is_read=False)
+
         letter_of_user = Letter.objects.filter(user=self.authorized_user).earliest("id")
+        self.assertFalse(letter_of_user.is_read)
         response = self.client.get(
             reverse("letter_page",
                     kwargs={"letter_id": letter_of_user.id})
         )
         self.assertTemplateUsed(response, "mail_box/letter_page.html")
+        letter_in_context = response.context["letter"]
+        self.assertTrue(letter_in_context.is_read)
 
         # попытка прочитать чужое письмо
         response = self.client.get(
@@ -129,8 +134,10 @@ class TestSendEmails(TestCase):
         for letter in letters:
             if letter.get_type() is EmailTypes.INBOX:
                 self.assertIn(letter.user, target_users)
+                self.assertFalse(letter.is_read)
             elif letter.get_type() is EmailTypes.SENT:
                 self.assertEqual(letter.user, sender)
+                self.assertTrue(letter.is_read)
             else:
                 self.fail()
 
@@ -276,4 +283,3 @@ class TestSendEmailsFromViews(BaseTest):
 
         response = self.client.post(reverse("send_email"), data=mail_data)
         self.assertEqual(response.status_code, 200)
-

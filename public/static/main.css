@@ -46,6 +46,10 @@ a:active {
     padding-left: 7px;
 }
 
+.is-unread {
+    font-weight: bold;
+}
+
 #letter-view .letter-text {
     background-color: white;
     padding: 10px;

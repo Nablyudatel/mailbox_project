@@ -4,7 +4,7 @@
     {% for letter in letters %}
         <a href="{% url "letter_page" letter.id%}">
             <div class="letter menu-item">
-                <div class="letter-header">{{ letter.message.header }}</div>
+                <div class="letter-header {% if letter.is_read %}is-read{% else %}is-unread{% endif %}">{{ letter.message.header }}</div>
                 <div><span class="letter-header">Получатели:</span> [
                     {% for addressee in letter.message.addressees_set.all %}
                         {% if forloop.last %}
