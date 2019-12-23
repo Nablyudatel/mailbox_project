@@ -2,6 +2,7 @@ from typing import List
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
 
 
@@ -84,6 +85,13 @@ class MailboxUser(AbstractUser):
 
     def is_ownership_letter(self, letter: "Letter"):
         return letter.user == self
+
+    def read_letter(self, letter):
+        """Пользователь читает письмо"""
+        if not self.is_ownership_letter(letter):
+            raise PermissionDenied("Пользователю, для прочтения, передано чужое письмо.")
+        letter.is_read = False
+        letter.save()
 
 
 # импорт размещён здесь намеренно.

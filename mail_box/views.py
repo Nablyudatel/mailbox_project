@@ -85,10 +85,8 @@ def letter_page(request, letter_id):
     user: "MailboxUser" = request.user
     letter = get_object_or_404(Letter, id=letter_id)
 
-    if not user.is_ownership_letter(letter):
+    if not user.is_ownership_letter(letter):  # здесь поставил проверку, для больше наглядности
         raise PermissionDenied()
 
-    letter.is_read = True
-    letter.save()
-
+    user.read_letter(letter)
     return render(request, "mail_box/letter_page.html", {"letter": letter})

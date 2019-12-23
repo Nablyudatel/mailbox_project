@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.test import TestCase
 from django.urls import reverse
 
@@ -177,6 +177,19 @@ class TestSendEmails(TestCase):
         text = ""
         with self.assertRaises(ValidationError):
             self.sender.send_mail(header, text, self.target_users)
+
+    def test_read_user_letter(self):
+        user = MailboxUser.objects.all().earliest("id")
+        Letter.objects.filter(user=user, is_read=True).update(is_read=False)
+        letter_of_user = Letter.objects.filter(user=user).earliest("id")
+        user.read_letter(letter_of_user)
+        self.assertTrue(letter_of_user.is_read)
+
+    def test_read_another_user_letter(self):
+        user = MailboxUser.objects.all().earliest("id")
+        another_of_user_letter = Letter.objects.exclude(user=user, is_read=False).earliest("id")
+        with self.assertRaises(PermissionDenied):
+            user.read_letter(another_of_user_letter)
 
 
 class TestSendEmailsFromViews(BaseTest):
