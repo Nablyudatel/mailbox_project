@@ -15,7 +15,7 @@ def main_page(request):
     """Главная страница"""
     user = request.user
     if user.is_authenticated:
-        total_new_letters = Letter.objects.filter(user=user, type=EmailTypes.INBOX.value, is_read=False).count()
+        total_new_letters = Letter.objects.filter(user=user, type=EmailTypes.INCOMING.value, is_read=False).count()
     else:
         total_new_letters = []
     return render(request, "main_page.html", {"total_new_letters": total_new_letters})
@@ -26,7 +26,7 @@ def main_page(request):
 def inbox(request):
     """Ящик входящей почты"""
     user = request.user
-    letters = Letter.objects.filter(user=user, type=EmailTypes.INBOX.value)
+    letters = Letter.objects.filter(user=user, type=EmailTypes.INCOMING.value)
     return render(request, "mail_box/inbox.html", {"letters": letters})
 
 
@@ -35,7 +35,7 @@ def inbox(request):
 def sent_box(request):
     """Ящик исходящей почты"""
     user = request.user
-    letters = Letter.objects.filter(user=user, type=EmailTypes.SENT.value)
+    letters = Letter.objects.filter(user=user, type=EmailTypes.OUTGOING.value)
     return render(request, "mail_box/sent.html", {"letters": letters})
 
 
@@ -112,9 +112,9 @@ def delete_letter(request, letter_id):
         raise PermissionDenied()
     letter.delete()
 
-    if letter.get_type() is EmailTypes.INBOX:
+    if letter.get_type() is EmailTypes.INCOMING:
         response = redirect("inbox_page")
-    elif letter.get_type() is EmailTypes.SENT:
+    elif letter.get_type() is EmailTypes.OUTGOING:
         response = redirect("sent_page")
     else:
         raise RuntimeError()

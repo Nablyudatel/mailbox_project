@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='Letter',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('INBOX', 'ВХД'), ('SENT', 'ИСХ')], max_length=4)),
+                ('type', models.CharField(choices=[('INCOMING', 'ВХД'), ('OUTGOING', 'ИСХ')], max_length=4)),
                 ('is_read', models.BooleanField(default=True)),
             ],
         ),

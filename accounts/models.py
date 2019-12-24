@@ -74,11 +74,11 @@ class MailboxUser(AbstractUser):
         message.clean_fields()  # sqlite3 не проверяет длину текста, поэтому нужно самому
         message.save()
         message.addressees_set.add(*users)
-        sent_email = Letter(user=self, message=message, type=EmailTypes.SENT.value)
+        sent_email = Letter(user=self, message=message, type=EmailTypes.OUTGOING.value)
 
         emails = [sent_email, ]
         for user in users:  # type: MailboxUser
-            inbox_email = Letter(user=user, message=message, type=EmailTypes.INBOX.value, is_read=False)
+            inbox_email = Letter(user=user, message=message, type=EmailTypes.INCOMING.value, is_read=False)
             emails.append(inbox_email)
         emails = Letter.objects.bulk_create(emails)  # Чтобы одним запросом все письма сохранить.
         return emails

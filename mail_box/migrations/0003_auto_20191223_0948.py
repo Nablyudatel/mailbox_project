@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='letter',
             name='type',
-            field=models.CharField(choices=[('INBOX', 'ВХД'), ('SENT', 'ИСХ')], max_length=5),
+            field=models.CharField(choices=[('INCOMING', 'ВХД'), ('OUTGOING', 'ИСХ')], max_length=5),
         ),
         migrations.AlterField(
             model_name='message',

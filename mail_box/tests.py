@@ -80,7 +80,7 @@ class TestOfPages(BaseTest):
 
         # Проверка контекста шаблона на наличие писем
         self.assertTrue(response.context.get("letters"))
-        inbox_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.INBOX.value)
+        inbox_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.INCOMING.value)
         # список входящих соотвестствует списку входящих в контексте шаблона
         self.assertListEqual(list(response.context["letters"]), list(inbox_letters))
 
@@ -94,7 +94,7 @@ class TestOfPages(BaseTest):
 
         # Проверка контекста шаблона на наличие писем
         self.assertTrue(response.context.get("letters"))
-        sent_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.SENT.value)
+        sent_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.OUTGOING.value)
         # список входящих соотвестствует списку входящих в контексте шаблона
         self.assertListEqual(list(response.context["letters"]), list(sent_letters))
 
@@ -131,14 +131,14 @@ class TestDeleteLetter(BaseTest):
 
     def test_delete_sent_email(self):
         # удаление письма из отправленных
-        letter_id = self.authorized_user.letters_set.filter(type=EmailTypes.SENT.value).earliest("id").id
+        letter_id = self.authorized_user.letters_set.filter(type=EmailTypes.OUTGOING.value).earliest("id").id
         response = self.client.get(reverse("delete_letter", kwargs={"letter_id": letter_id}))
         self.assertRedirects(response, reverse("sent_page"))
         self._is_letter_deleted(letter_id)
 
     def test_delete_incoming_letter(self):
         # удаление письма из входящих
-        letter_id = self.authorized_user.letters_set.filter(type=EmailTypes.INBOX.value).earliest("id").id
+        letter_id = self.authorized_user.letters_set.filter(type=EmailTypes.INCOMING.value).earliest("id").id
         response = self.client.get(reverse("delete_letter", kwargs={"letter_id": letter_id}))
         self.assertRedirects(response, reverse("inbox_page"))
         self._is_letter_deleted(letter_id)
@@ -146,7 +146,7 @@ class TestDeleteLetter(BaseTest):
     def test_attempt_delete_another_user_letter(self):
         """Попытка удалить чужое письмо"""
         letter_id = Letter.objects\
-            .filter(type=EmailTypes.INBOX.value)\
+            .filter(type=EmailTypes.INCOMING.value)\
             .exclude(user=self.authorized_user)\
             .earliest("id").id
         response = self.client.get(reverse("delete_letter", kwargs={"letter_id": letter_id}))
@@ -167,10 +167,10 @@ class TestSendEmails(TestCase):
     def _checked_created_emails(self, sender, target_users, letters):
         self.assertEqual(len(letters), 3)
         for letter in letters:
-            if letter.get_type() is EmailTypes.INBOX:
+            if letter.get_type() is EmailTypes.INCOMING:
                 self.assertIn(letter.user, target_users)
                 self.assertFalse(letter.is_read)
-            elif letter.get_type() is EmailTypes.SENT:
+            elif letter.get_type() is EmailTypes.OUTGOING:
                 self.assertEqual(letter.user, sender)
                 self.assertTrue(letter.is_read)
             else:
@@ -238,8 +238,8 @@ class TestSendEmailsFromViews(BaseTest):
 
         # Первые три пользователя, которым должны прийти письма
         target_users = MailboxUser.objects.all()[:2]
-        inbox_mail_count_list = [u.letters_set.filter(type=EmailTypes.INBOX.value).count() for u in target_users]
-        sent_mail_count_of_sender = self.authorized_user.letters_set.filter(type=EmailTypes.SENT.value).count()
+        inbox_mail_count_list = [u.letters_set.filter(type=EmailTypes.INCOMING.value).count() for u in target_users]
+        sent_mail_count_of_sender = self.authorized_user.letters_set.filter(type=EmailTypes.OUTGOING.value).count()
 
         mail_data = {
             "addressee": [1, 2, 3],
@@ -257,13 +257,13 @@ class TestSendEmailsFromViews(BaseTest):
         self.assertEqual(total_letters + 4, Letter.objects.count())
 
         # у каждого адресата должно появиться по одному входящему
-        new_inbox_mail_count_list = [u.letters_set.filter(type=EmailTypes.INBOX.value).count() for u in target_users]
+        new_inbox_mail_count_list = [u.letters_set.filter(type=EmailTypes.INCOMING.value).count() for u in target_users]
         for v in inbox_mail_count_list:
             for new_v in new_inbox_mail_count_list:
                 self.assertEqual(v + 1, new_v)
 
         # у отправителья должно появиться одно исходящее письмо
-        current_sent_mail_count = self.authorized_user.letters_set.filter(type=EmailTypes.SENT.value).count()
+        current_sent_mail_count = self.authorized_user.letters_set.filter(type=EmailTypes.OUTGOING.value).count()
         self.assertEqual(sent_mail_count_of_sender + 1, current_sent_mail_count)
 
     def test_send_invalid_addressee_data(self):

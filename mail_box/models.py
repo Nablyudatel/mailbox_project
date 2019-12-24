@@ -7,8 +7,8 @@ from mailbox_project import settings
 
 
 class EmailTypes(Enum):
-    INBOX = "ВХД"
-    SENT = "ИСХ"
+    INCOMING = "ВХД"
+    OUTGOING = "ИСХ"
 
     @classmethod
     def str_to_constant(cls, string: str):
@@ -42,7 +42,7 @@ class Letter(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="letters_set")
     message = models.ForeignKey("Message", on_delete=models.PROTECT, related_name="+")
-    type = models.CharField(max_length=5, choices=[(code.name, code.value) for code in EmailTypes])
+    type = models.CharField(max_length=3, choices=[(code.value, code.name) for code in EmailTypes])
     is_read = models.BooleanField(default=True)
 
     def get_type(self) -> "EmailTypes":
