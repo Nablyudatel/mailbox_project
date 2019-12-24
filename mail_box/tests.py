@@ -80,7 +80,7 @@ class TestOfPages(BaseTest):
 
         # Проверка контекста шаблона на наличие писем
         self.assertTrue(response.context.get("letters"))
-        inbox_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.INCOMING.value)
+        inbox_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.INCOMING.value).order_by("-id")
         # список входящих соотвестствует списку входящих в контексте шаблона
         self.assertListEqual(list(response.context["letters"]), list(inbox_letters))
 
@@ -94,7 +94,7 @@ class TestOfPages(BaseTest):
 
         # Проверка контекста шаблона на наличие писем
         self.assertTrue(response.context.get("letters"))
-        sent_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.OUTGOING.value)
+        sent_letters = Letter.objects.filter(user=self.authorized_user, type=EmailTypes.OUTGOING.value).order_by("-id")
         # список входящих соотвестствует списку входящих в контексте шаблона
         self.assertListEqual(list(response.context["letters"]), list(sent_letters))
 

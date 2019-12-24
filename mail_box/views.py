@@ -26,7 +26,7 @@ def main_page(request):
 def inbox(request):
     """Ящик входящей почты"""
     user = request.user
-    letters = Letter.objects.filter(user=user, type=EmailTypes.INCOMING.value)
+    letters = Letter.objects.filter(user=user, type=EmailTypes.INCOMING.value).order_by("-id")
     return render(request, "mail_box/inbox.html", {"letters": letters})
 
 
@@ -35,7 +35,7 @@ def inbox(request):
 def sent_box(request):
     """Ящик исходящей почты"""
     user = request.user
-    letters = Letter.objects.filter(user=user, type=EmailTypes.OUTGOING.value)
+    letters = Letter.objects.filter(user=user, type=EmailTypes.OUTGOING.value).order_by("-id")
     return render(request, "mail_box/sent.html", {"letters": letters})
 
 
