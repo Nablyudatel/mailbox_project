@@ -1,0 +1,8 @@
+email: admin@mail.ru
+password: adminadmin
+
+email: test-user-one@mailbox.ru
+password: adminadmin
+
+email: test-user-two@mailbox.ru
+password: adminadmin
