@@ -14,6 +14,7 @@
                         {% endif %}
                     {% endfor %}
                 ]</div>
+                <div><a href="{% url "delete_letter" letter.id %}"><button>Удалить</button></a></div>
             </div>
         </a>
     {% endfor %}

@@ -56,6 +56,7 @@ class TestOfPages(BaseTest):
             reverse("letter_page",
                     kwargs={"letter_id": letter_of_user.id})
         )
+        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "mail_box/letter_page.html")
         letter_in_context = response.context["letter"]
         self.assertTrue(letter_in_context.is_read)
@@ -120,6 +121,40 @@ class TestOfPages(BaseTest):
         response = self.client.post(reverse("send_email"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "mail_box/send_email_page.html")
+
+
+class TestDeleteLetter(BaseTest):
+
+    def _is_letter_deleted(self, letter_id):
+        with self.assertRaises(Letter.DoesNotExist):
+            self.authorized_user.letters_set.get(id=letter_id)
+
+    def test_delete_sent_email(self):
+        # удаление письма из отправленных
+        letter_id = self.authorized_user.letters_set.filter(type=EmailTypes.SENT.value).earliest("id").id
+        response = self.client.get(reverse("delete_letter", kwargs={"letter_id": letter_id}))
+        self.assertRedirects(response, reverse("sent_page"))
+        self._is_letter_deleted(letter_id)
+
+    def test_delete_incoming_letter(self):
+        # удаление письма из входящих
+        letter_id = self.authorized_user.letters_set.filter(type=EmailTypes.INBOX.value).earliest("id").id
+        response = self.client.get(reverse("delete_letter", kwargs={"letter_id": letter_id}))
+        self.assertRedirects(response, reverse("inbox_page"))
+        self._is_letter_deleted(letter_id)
+
+    def test_attempt_delete_another_user_letter(self):
+        """Попытка удалить чужое письмо"""
+        letter_id = Letter.objects\
+            .filter(type=EmailTypes.INBOX.value)\
+            .exclude(user=self.authorized_user)\
+            .earliest("id").id
+        response = self.client.get(reverse("delete_letter", kwargs={"letter_id": letter_id}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_unauthorized_login(self):
+        self._unauthorized_login_attempt_to_view_authorize_required(
+            reverse("delete_letter", kwargs={"letter_id": 1}))
 
 
 class TestSendEmails(TestCase):

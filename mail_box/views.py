@@ -90,3 +90,32 @@ def letter_page(request, letter_id):
 
     user.read_letter(letter)
     return render(request, "mail_box/letter_page.html", {"letter": letter})
+
+
+@require_GET
+@login_required
+def delete_letter(request, letter_id):
+    """
+    После удаления, в зависимости от типа письма,
+    пользователь возвращается в соответствующую папку писем.
+
+    Решил сделать удаление методом гет, чтобы не подключать проверку csrf.
+    Чтобы удалить письмо используя уязвимость csrf,
+    нужно ещё знать id письма, что уже маловероятно.
+    Организовать же перебор разных ид у злоумышленника нет возможности.
+    """
+    # noinspection PyTypeChecker
+    user: "MailboxUser" = request.user
+
+    letter = get_object_or_404(Letter, id=letter_id)
+    if not user.is_ownership_letter(letter):
+        raise PermissionDenied()
+    letter.delete()
+
+    if letter.get_type() is EmailTypes.INBOX:
+        response = redirect("inbox_page")
+    elif letter.get_type() is EmailTypes.SENT:
+        response = redirect("sent_page")
+    else:
+        raise RuntimeError()
+    return response

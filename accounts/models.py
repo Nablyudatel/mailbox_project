@@ -90,7 +90,7 @@ class MailboxUser(AbstractUser):
         """Пользователь читает письмо"""
         if not self.is_ownership_letter(letter):
             raise PermissionDenied("Пользователю, для прочтения, передано чужое письмо.")
-        letter.is_read = False
+        letter.is_read = True
         letter.save()
 
 
