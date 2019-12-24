@@ -61,3 +61,10 @@ a:active {
     border-bottom: gray groove 1px;
 }
 
+.messages .success {
+    background-color: chartreuse;
+    margin: 3px;
+    padding: 5px;
+    border: black thin groove;
+}
+

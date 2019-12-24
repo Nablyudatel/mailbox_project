@@ -8,17 +8,28 @@
     <title>{% block title %}Ваша почта{% endblock %}</title>
 </head>
 <body>
-    {% if user.is_authenticated %}
+
     <div id="page">
-        <div>Здравствуйте <span style="font-weight: bold">{{ user.first_name }} {{ user.last_name }}</span></div>
-        <div>Ваша почта: <span style="font-weight: bold">{{ user.email }}</span></div>
-        <br>
-    {% else %}
-        <div id="page">
-        <div>Здравствуйте <span style="font-weight: bold">Гость</span></div>
-        <br>
-    {% endif %}
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+                <div>Здравствуйте <span style="font-weight: bold">{{ user.first_name }} {{ user.last_name }}</span></div>
+                <div>Ваша почта: <span style="font-weight: bold">{{ user.email }}</span></div>
+                <br>
+        {% else %}
+            <div>Здравствуйте <span style="font-weight: bold">Гость</span></div>
+            <br>
+        {% endif %}
+
         {% block content %} {% endblock %}
+
     </div>
 </body>
 </html>
